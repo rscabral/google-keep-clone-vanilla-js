@@ -190,12 +190,12 @@ input:focus {
   padding: 8px 24px;
   border-radius: 4px;
   border-color: transparent !important;
-  background-color: rgb(251, 251, 251);
+  background-color: rgb(219, 219, 219);
 }
 
 #submit-button {
   color: #fff;
-  background-color: #007bff;
+  background-color: #43bb61;
 }
 
 #submit-button:hover,
