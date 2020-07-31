@@ -10,11 +10,18 @@ class App {
     
     this.$notes = document.querySelector('#notes');
 
+    this._eventNameNoteCreated = 'noteCreated';
+
     this.addEventListeners();
   }
 
   addEventListeners() {
     document.body.addEventListener('click', event => this.handleFormClick(event));
+    
+    this.$form.addEventListener(this._eventNameNoteCreated, event => {
+      this.displayNotes();
+      this.closeForm();
+    });
 
     this.$form.addEventListener('submit', event => {
       event.preventDefault();
@@ -65,9 +72,11 @@ class App {
       color: 'yellow'
     }
     this.notes = [...this.notes, newNote];
+    this.createNoteCreatedEvent();    
+  }
 
-    this.displayNotes();
-    this.closeForm();
+  createNoteCreatedEvent(note) {
+    this.$form.dispatchEvent(new Event(this._eventNameNoteCreated));
   }
 
   displayNotes() {
