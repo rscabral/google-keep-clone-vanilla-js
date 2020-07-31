@@ -48,7 +48,18 @@ class App {
   }
 
   addNote(note) {
-    this.notes = [...this.notes, note];
+    const { title, text } = note;
+    
+    const newTitle = title || 'Untitled';
+    const nextId = this.notes.length > 0 
+                      ? this.notes[this.notes.length -1].id + 1 : 1;
+    const newNote = {
+      id: nextId,
+      newTitle,
+      text,
+      color: 'yellow'
+    }
+    this.notes = [...this.notes, newNote];
   }
 
 }
