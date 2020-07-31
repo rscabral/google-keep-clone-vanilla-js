@@ -1,8 +1,9 @@
 class App {
   constructor() {
-    console.log("asdasd");
+    this.notes = [];
     this.$form = document.querySelector('#form');
     this.$noteTitle = document.querySelector('#note-title');
+    this.$noteText = document.querySelector('#note-text');
     this.$formButtons = document.querySelector('#form-buttons');    
 
     this.addEventListeners();
@@ -10,6 +11,18 @@ class App {
 
   addEventListeners() {
     document.body.addEventListener('click', event => this.handleFormClick(event));
+
+    this.$form.addEventListener('submit', event => {
+      event.preventDefault();
+      const title = this.$noteTitle.value;
+      const text = this.$noteText.value;
+      const isValidNote = title || text;
+
+      if (isValidNote) {
+        this.addNote({ title, text });
+        console.log(this.notes);
+      }
+    });
   }
 
   handleFormClick(event) {
@@ -33,6 +46,11 @@ class App {
     this.$noteTitle.style.display = 'none';
     this.$formButtons.style.display = 'none';
   }
+
+  addNote(note) {
+    this.notes = [...this.notes, note];
+  }
+
 }
 
 new App();
