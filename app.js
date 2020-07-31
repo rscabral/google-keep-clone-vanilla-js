@@ -26,20 +26,29 @@ class App {
     this.$form.addEventListener('submit', event => {
       event.preventDefault();
       const title = this.$noteTitle.value;
-      const text = this.$noteText.value;
-      const isValidNote = title || text;
+      const text = this.$noteText.value;      
 
-      if (isValidNote) {
+      if (this.hasNote({ title, text })) {
         this.addNote({ title, text });        
       }
     });
   }
 
+  hasNote(note) {
+    return note.title || note.text;
+  }
+
   handleFormClick(event) {
     const isFormClicked = this.$form.contains(event.target);
+    const currentNote = { 
+      title: this.$noteTitle.value, 
+      text: this.$noteText.value
+    };
 
     if (isFormClicked) {
       this.openForm();
+    } else if (this.hasNote(currentNote)){
+      this.addNote(currentNote);
     } else {
       this.closeForm();
     }
