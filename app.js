@@ -11,6 +11,7 @@ class App {
     this.$notes = document.querySelector('#notes');
 
     this._eventNameNoteCreated = 'noteCreated';
+    this._eventNameFormClosed = 'formClosed';
 
     this.addEventListeners();
   }
@@ -21,6 +22,11 @@ class App {
     this.$form.addEventListener(this._eventNameNoteCreated, event => {
       this.displayNotes();
       this.closeForm();
+    });
+
+    this.$form.addEventListener(this._eventNameFormClosed, event => {
+      const { note } = event.detail;
+      this.addNote(note);
     });
 
     this.$form.addEventListener('submit', event => {
@@ -40,18 +46,24 @@ class App {
 
   handleFormClick(event) {
     const isFormClicked = this.$form.contains(event.target);
-    const currentNote = { 
-      title: this.$noteTitle.value, 
+  
+    if (isFormClicked) {
+      this.openForm();
+    } else {
+      this.createFormClosedEvent();
+      this.closeForm();      
+    }
+  }
+
+  createFormClosedEvent() {
+    const currentNote = {
+      title: this.$noteTitle.value,
       text: this.$noteText.value
     };
 
-    if (isFormClicked) {
-      this.openForm();
-    } else if (this.hasNote(currentNote)){
-      this.addNote(currentNote);
-    } else {
-      this.closeForm();
-    }
+    this.$form.dispatchEvent(
+      new CustomEvent(this._eventNameFormClosed, { detail: { note: currentNote } })
+    );
   }
 
   openForm() {
