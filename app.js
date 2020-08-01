@@ -23,6 +23,7 @@ class App {
     this._eventNameNoteCreated = 'noteCreated';
     this._eventNameNoteUpdated = 'noteUpdated';
     this._eventNameFormClickedOut = 'formClickedOut';
+    this._eventNameModalClosed = 'modalClosed';
 
     this.addEventListeners();
   }
@@ -66,6 +67,10 @@ class App {
 
     this.$modal.addEventListener(this._eventNameNoteUpdated, event => 
       this.displayNotes()
+    );
+
+    document.body.addEventListener(this._eventNameModalClosed, event => 
+      this.editNote(event.detail)
     );
 
   }
@@ -117,9 +122,20 @@ class App {
     }
   }
 
-  closeModal(event) {
-    this.editNote();
+  closeModal(event) {    
     this.$modal.classList.toggle('open-modal');
+    this.$modal.dispatchEvent(
+      new CustomEvent(this._eventNameModalClosed, 
+        { 
+          bubbles: true,
+          detail: { 
+            id: this.id, 
+            title: this.$modalTitle.value, 
+            text: this.$modalText.value, 
+          }, 
+        }
+      )
+    );
   }
 
   addNote(note) {
@@ -138,11 +154,10 @@ class App {
     this.riseNoteCreatedEvent();    
   }
 
-  editNote() {
-    const title = this.$modalTitle.value;
-    const text = this.$modalText.value;
+  editNote(note) {
+    const { id, title, text } = note;
     this.notes = this.notes.map(note =>
-      note.id === Number(this.id) ? { ...note, title, text } : note
+      note.id === Number(id) ? { ...note, title, text } : note
     );
     this.riseNoteUpdatedEvent()
   }
