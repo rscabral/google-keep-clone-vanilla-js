@@ -20,6 +20,8 @@ class App {
     this.$modalText = document.querySelector('.modal-text');
     this.$modalCloseButton = document.querySelector('.modal-close-button');
 
+    this.$colorTooltip = document.querySelector('#color-tooltip');
+
     this._eventNameNoteCreated = 'noteCreated';
     this._eventNameNoteUpdated = 'noteUpdated';
     this._eventNameFormClickedOut = 'formClickedOut';
@@ -33,6 +35,22 @@ class App {
       this.handleFormClick(event);
       this.selectNote(event);
       this.openModal(event);
+    });
+
+    document.body.addEventListener('mouseover', event => 
+      this.openTooltip(event)
+    );
+
+    document.body.addEventListener('mouseout', event => 
+      this.closeTooltip(event)
+    );
+
+    this.$colorTooltip.addEventListener('mouseover', function() {
+      this.style.display = 'flex';
+    });
+
+    this.$colorTooltip.addEventListener('mouseout', function() {
+      this.style.display = 'none';
     });
     
     this.$form.addEventListener(this._eventNameNoteCreated, event => {
@@ -67,12 +85,7 @@ class App {
 
     this.$modal.addEventListener(this._eventNameNoteUpdated, event => 
       this.displayNotes()
-    );
-
-    document.body.addEventListener(this._eventNameModalClosed, event => 
-      this.editNote(event.detail)
-    );
-
+    );    
   }
 
   hasNote(note) {
@@ -124,18 +137,39 @@ class App {
 
   closeModal(event) {    
     this.$modal.classList.toggle('open-modal');
+    this.riseModalClosedEvent();
+  }
+
+  riseModalClosedEvent() {
     this.$modal.dispatchEvent(
-      new CustomEvent(this._eventNameModalClosed, 
-        { 
+      new CustomEvent(this._eventNameModalClosed,
+        {
           bubbles: true,
-          detail: { 
-            id: this.id, 
-            title: this.$modalTitle.value, 
-            text: this.$modalText.value, 
-          }, 
+          detail: {
+            id: this.id,
+            title: this.$modalTitle.value,
+            text: this.$modalText.value,
+          },
         }
       )
     );
+  }
+
+  openTooltip(event) {
+    if (!event.target.matches('.toolbar-color')) return;
+    
+    this.id = event.target.nextElementSibling.dataset.id;
+    const noteCoordinates = event.target.getBoundingClientRect();
+    const horizontal = noteCoordinates.left + window.scrollX;
+    const vertical = noteCoordinates.top + window.scrollY;
+
+    this.$colorTooltip.style.transform = `translate(${horizontal}px, ${vertical}px)`;
+    this.$colorTooltip.style.display = 'flex';
+  }
+
+  closeTooltip(event) {
+    if (!event.target.matches('.toolbar-color')) return;
+    this.$colorTooltip.style.display = 'none';
   }
 
   addNote(note) {
