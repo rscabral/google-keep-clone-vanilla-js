@@ -52,6 +52,13 @@ class App {
     this.$colorTooltip.addEventListener('mouseout', function() {
       this.style.display = 'none';
     });
+
+    this.$colorTooltip.addEventListener('click', event => {
+      const color = event.target.dataset.color;
+      if (color) {
+        this.editNoteColor(color);
+      }
+    });
     
     this.$form.addEventListener(this._eventNameNoteCreated, event => {
       this.displayNotes();
@@ -158,7 +165,7 @@ class App {
   openTooltip(event) {
     if (!event.target.matches('.toolbar-color')) return;
     
-    this.id = event.target.nextElementSibling.dataset.id;
+    this.id = event.target.dataset.id;
     const noteCoordinates = event.target.getBoundingClientRect();
     const horizontal = noteCoordinates.left + window.scrollX;
     const vertical = noteCoordinates.top + window.scrollY;
@@ -193,7 +200,14 @@ class App {
     this.notes = this.notes.map(note =>
       note.id === Number(id) ? { ...note, title, text } : note
     );
-    this.riseNoteUpdatedEvent()
+    this.riseNoteUpdatedEvent();
+  }
+
+  editNoteColor(color) {
+    this.notes = this.notes.map(note =>
+      note.id === Number(this.id) ? { ...note, color } : note
+    );
+    this.riseNoteUpdatedEvent();
   }
 
   selectNote(event) {
@@ -223,7 +237,7 @@ class App {
       <div style="background: ${note.color};" class="note" data-id="${note.id}">
         <div class="toolbar-container">
           <div class="toolbar">
-              <img class="toolbar-color" src="./assets/palette-icon.png">
+              <img class="toolbar-color" data-id=${note.id} src="./assets/palette-icon.png">
               <img class="toolbar-delete" src="./assets/delete-trash-icon.png">
             </div>
           </div>
