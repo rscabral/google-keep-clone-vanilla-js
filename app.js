@@ -1,6 +1,6 @@
 class App {
   constructor() {
-    this.notes = [];
+    this.notes = JSON.parse(localStorage.getItem('notes')) || [];
     this.title = '';
     this.text = '';
     this.id = '';
@@ -28,7 +28,12 @@ class App {
     this._eventNameFormClickedOut = 'formClickedOut';
     this._eventNameModalClosed = 'modalClosed';
 
+    this.render();
+  }
+
+  render() {
     this.addEventListeners();
+    this.displayNotes();
   }
 
   addEventListeners() {
@@ -47,8 +52,8 @@ class App {
       this.closeTooltip(event)
     );
 
-    document.body.addEventListener(this._eventNameNoteDeleted, event => 
-      this.displayNotes()
+    document.body.addEventListener(this._eventNameNoteDeleted, event =>
+      this.renderNotes()
     );
 
     document.body.addEventListener(this._eventNameModalClosed, event => 
@@ -71,7 +76,7 @@ class App {
     });
     
     this.$form.addEventListener(this._eventNameNoteCreated, event => {
-      this.displayNotes();
+      this.renderNotes();
       this.closeForm();
     });
 
@@ -100,9 +105,14 @@ class App {
       this.closeModal(event);
     });
 
-    this.$modal.addEventListener(this._eventNameNoteUpdated, event => 
-      this.displayNotes()
+    this.$modal.addEventListener(this._eventNameNoteUpdated, event =>
+      this.renderNotes()
     );    
+  }
+
+  renderNotes() {
+    this.saveNotes();
+    this.displayNotes();
   }
 
   hasNote(note) {
@@ -269,6 +279,10 @@ class App {
         <div class="note-text">${note.text}</div>
       </div>
     `).join('');
+  }
+
+  saveNotes() {
+    localStorage.setItem('notes', JSON.stringify(this.notes));
   }
 
 }
