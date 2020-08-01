@@ -51,6 +51,10 @@ class App {
       this.displayNotes()
     );
 
+    document.body.addEventListener(this._eventNameModalClosed, event => 
+      this.editNote(event.detail)
+    );
+
     this.$colorTooltip.addEventListener('mouseover', function() {
       this.style.display = 'flex';
     });
