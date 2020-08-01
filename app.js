@@ -18,8 +18,10 @@ class App {
     this.$modal = document.querySelector('.modal');
     this.$modalTitle = document.querySelector('.modal-title');
     this.$modalText = document.querySelector('.modal-text');
+    this.$modalCloseButton = document.querySelector('.modal-close-button');
 
     this._eventNameNoteCreated = 'noteCreated';
+    this._eventNameNoteUpdated = 'noteUpdated';
     this._eventNameFormClickedOut = 'formClickedOut';
 
     this.addEventListeners();
@@ -57,6 +59,15 @@ class App {
       event.stopPropagation();
       this.closeForm();
     });
+
+    this.$modalCloseButton.addEventListener('click', event => {
+      this.closeModal(event);
+    });
+
+    this.$modal.addEventListener(this._eventNameNoteUpdated, event => 
+      this.displayNotes()
+    );
+
   }
 
   hasNote(note) {
@@ -106,6 +117,11 @@ class App {
     }
   }
 
+  closeModal(event) {
+    this.editNote();
+    this.$modal.classList.toggle('open-modal');
+  }
+
   addNote(note) {
     const { title, text } = note;
     
@@ -119,7 +135,16 @@ class App {
       color: 'yellow'
     }
     this.notes = [...this.notes, newNote];
-    this.createNoteCreatedEvent();    
+    this.riseNoteCreatedEvent();    
+  }
+
+  editNote() {
+    const title = this.$modalTitle.value;
+    const text = this.$modalText.value;
+    this.notes = this.notes.map(note =>
+      note.id === Number(this.id) ? { ...note, title, text } : note
+    );
+    this.riseNoteUpdatedEvent()
   }
 
   selectNote(event) {
@@ -133,8 +158,12 @@ class App {
     this.id = $selectedNote.dataset.id; // data-id="value"
   }
 
-  createNoteCreatedEvent(note) {
+  riseNoteCreatedEvent(note) {
     this.$form.dispatchEvent(new Event(this._eventNameNoteCreated));
+  }
+
+  riseNoteUpdatedEvent() {
+    this.$modal.dispatchEvent(new Event(this._eventNameNoteUpdated));
   }
 
   displayNotes() {
