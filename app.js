@@ -24,6 +24,7 @@ class App {
 
     this._eventNameNoteCreated = 'noteCreated';
     this._eventNameNoteUpdated = 'noteUpdated';
+    this._eventNameNoteDeleted = 'noteDeleted';
     this._eventNameFormClickedOut = 'formClickedOut';
     this._eventNameModalClosed = 'modalClosed';
 
@@ -35,6 +36,7 @@ class App {
       this.handleFormClick(event);
       this.selectNote(event);
       this.openModal(event);
+      this.deleteNote(event);
     });
 
     document.body.addEventListener('mouseover', event => 
@@ -43,6 +45,10 @@ class App {
 
     document.body.addEventListener('mouseout', event => 
       this.closeTooltip(event)
+    );
+
+    document.body.addEventListener(this._eventNameNoteDeleted, event => 
+      this.displayNotes()
     );
 
     this.$colorTooltip.addEventListener('mouseover', function() {
@@ -135,6 +141,8 @@ class App {
   }
 
   openModal(event) {
+    if (event.target.matches('.toolbar-delete')) return; 
+
     if (event.target.closest('.note')) {
       this.$modal.classList.toggle('open-modal');      
       this.$modalTitle.value = this.title;
@@ -210,6 +218,14 @@ class App {
     this.riseNoteUpdatedEvent();
   }
 
+  deleteNote(event) {
+    if (!event.target.matches('.toolbar-delete')) return;
+    event.stopPropagation();
+    const id = event.target.dataset.id;
+    this.notes = this.notes.filter(note => note.id !== Number(id));
+    this.riseNoteDeletedEvent();
+  }
+
   selectNote(event) {
     const $selectedNote = event.target.closest('.note');
     if (!$selectedNote) return;
@@ -229,6 +245,10 @@ class App {
     this.$modal.dispatchEvent(new Event(this._eventNameNoteUpdated));
   }
 
+  riseNoteDeletedEvent() {
+    document.body.dispatchEvent(new Event(this._eventNameNoteDeleted));
+  }
+
   displayNotes() {
     const hasNotes = this.notes.length > 0;
     this.$placeholder.style = hasNotes ? 'note' : 'flex';
@@ -238,7 +258,7 @@ class App {
         <div class="toolbar-container">
           <div class="toolbar">
               <img class="toolbar-color" data-id=${note.id} src="./assets/palette-icon.png">
-              <img class="toolbar-delete" src="./assets/delete-trash-icon.png">
+              <img class="toolbar-delete" data-id=${note.id} src="./assets/delete-trash-icon.png">
             </div>
           </div>
         <div class="${note.title && 'note-title'}">${note.title}</div>
