@@ -265,7 +265,7 @@ class App {
 
   displayNotes() {
     const hasNotes = this.notes.length > 0;
-    this.$placeholder.style = hasNotes ? 'note' : 'flex';
+    this.$placeholder.style = hasNotes ? 'none' : 'flex';
 
     this.$notes.innerHTML = this.notes.map(note => `
       <div style="background: ${note.color};" class="note" data-id="${note.id}">
